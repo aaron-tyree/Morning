@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Morning Routine</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0f;
+    --card: #13131a;
+    --accent: #e8ff47;
+    --text: #f0f0f0;
+    --muted: #4a4a5a;
+    --done-bg: #0f1a0e;
+    --done-border: #1e3018;
+    --done-text: #5a7040;
+    --border: #1e1e2a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 18px 64px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 430px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 76px;
+    letter-spacing: 3px;
+    line-height: 0.9;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .progress-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--accent);
+    transition: all 0.3s ease;
+  }
+
+  .progress-track {
+    background: #1a1a24;
+    height: 3px;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 26px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s, transform 0.12s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .step:active { transform: scale(0.975); }
+
+  .step.done {
+    background: var(--done-bg);
+    border-color: var(--done-border);
+  }
+
+  .step-icon {
+    font-size: 22px;
+    min-width: 28px;
+    text-align: center;
+    transition: opacity 0.3s;
+  }
+
+  .step.done .step-icon { opacity: 0.3; }
+
+  .step-content { flex: 1; }
+
+  .step-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .step-num {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+
+  .step-time {
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: rgba(232,255,71,0.07);
+    padding: 2px 8px;
+    border-radius: 20px;
+    transition: color 0.3s, background 0.3s;
+  }
+
+  .step.done .step-num { color: var(--done-text); }
+  .step.done .step-time { color: var(--done-text); background: rgba(90,112,64,0.1); }
+
+  .step-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+    line-height: 1.3;
+    transition: color 0.3s;
+  }
+
+  .step.done .step-title {
+    color: var(--done-text);
+    text-decoration: line-through;
+    text-decoration-color: var(--done-text);
+  }
+
+  .step-sub {
+    font-size: 12.5px;
+    color: #555;
+    font-weight: 300;
+    line-height: 1.45;
+    transition: color 0.3s;
+  }
+
+  .step.done .step-sub { color: #2e3e24; }
+
+  .check-box {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border: 2px solid #2a2a3a;
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .check-box::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 4px;
+    width: 13px;
+    height: 7px;
+    border-left: 2.5px solid #0c0c0f;
+    border-bottom: 2.5px solid #0c0c0f;
+    transform: rotate(-45deg) scale(0);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity: 0;
+  }
+
+  .step.done .check-box {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .step.done .check-box::after {
+    transform: rotate(-45deg) scale(1);
+    opacity: 1;
+  }
+
+  .complete-msg {
+    display: none;
+    margin-top: 30px;
+    text-align: center;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .complete-msg.show { display: block; }
+
+  .complete-emoji { font-size: 44px; display: block; margin-bottom: 10px; }
+
+  .complete-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+
+  .complete-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .reset-btn {
+    display: block;
+    margin: 28px auto 0;
+    background: none;
+    border: 1px solid #1e1e2a;
+    color: #333344;
+    padding: 11px 28px;
+    border-radius: 100px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { border-color: #3a3a5a; color: #666; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.85) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes checkBounce {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(0.94); }
+    100% { transform: scale(1); }
+  }
+
+  .step.pop { animation: checkBounce 0.22s ease; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="eyebrow">Daily Reset</div>
+  <div class="title">MORNING</div>
+  <div class="tagline">Win the morning, win the day.</div>
+
+  <div class="progress-row">
+    <span class="progress-label" id="progressLabel">0 of 9 complete</span>
+    <span class="progress-pct" id="progressPct">0%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">🙏</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">01</span><span class="step-time">5 min</span></div>
+        <div class="step-title">Prayer</div>
+        <div class="step-sub">Start here. Set your intentions before the world gets loud.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">💧</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">02</span><span class="step-time">2 min</span></div>
+        <div class="step-title">Drink Water</div>
+        <div class="step-sub">Full glass before anything else. Your brain is dehydrated.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">📖</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">03</span><span class="step-time">15 min</span></div>
+        <div class="step-title">Bible Reading</div>
+        <div class="step-sub">Feed your spirit before you feed the grind.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">⚡</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">04</span><span class="step-time">20 min</span></div>
+        <div class="step-title">Movement</div>
+        <div class="step-sub">Walk, lift, stretch — anything. Get the blood moving.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">🚿</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">05</span><span class="step-time">10 min</span></div>
+        <div class="step-title">Shower & Get Dressed</div>
+        <div class="step-sub">Real clothes on. It tells your brain the day is live.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">🍳</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">06</span><span class="step-time">10 min</span></div>
+        <div class="step-title">Eat Breakfast</div>
+        <div class="step-sub">Fuel up. Doesn't need to be fancy — just don't skip it.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">🧹</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">07</span><span class="step-time">5 min</span></div>
+        <div class="step-title">Tidy Up</div>
+        <div class="step-sub">Make your bed, clear your space. Clean space = clear mind.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">📓</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">08</span><span class="step-time">10 min</span></div>
+        <div class="step-title">Journal</div>
+        <div class="step-sub">What are you grateful for? What do you want from today?</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+    <div class="step" onclick="toggle(this)">
+      <div class="step-icon">🐸</div>
+      <div class="step-content">
+        <div class="step-meta"><span class="step-num">09</span><span class="step-time">— min</span></div>
+        <div class="step-title">Eat the Frog</div>
+        <div class="step-sub">Your biggest, hardest task first. Everything else is easy after.</div>
+      </div>
+      <div class="check-box"></div>
+    </div>
+
+  </div>
+
+  <div class="complete-msg" id="completeMsg">
+    <span class="complete-emoji">🔥</span>
+    <div class="complete-title">Morning Won.</div>
+    <div class="complete-sub">You're already ahead of most people. Go get it.</div>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">Reset for Tomorrow</button>
+
+</div>
+
+<script>
+  const TOTAL = 9;
+
+  function toggle(el) {
+    el.classList.toggle('done');
+    el.classList.add('pop');
+    setTimeout(() => el.classList.remove('pop'), 250);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const done = document.querySelectorAll('.step.done').length;
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressLabel').textContent = done + ' of ' + TOTAL + ' complete';
+    document.getElementById('completeMsg').classList.toggle('show', done === TOTAL);
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('done'));
+    updateProgress();
+  }
+</script>
+</body>
+</html>
